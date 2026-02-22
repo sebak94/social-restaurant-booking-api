@@ -1,0 +1,15 @@
+green_garden_small:
+  restaurant: green_garden
+  capacity: 2
+
+green_garden_large:
+  restaurant: green_garden
+  capacity: 4
+
+steakhouse_table:
+  restaurant: steakhouse
+  capacity: 4
+
+classic_diner_table:
+  restaurant: classic_diner
+  capacity: 6

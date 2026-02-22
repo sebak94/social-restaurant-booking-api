@@ -1,0 +1,11 @@
+green_garden_vegan:
+  restaurant: green_garden
+  dietary_restriction: vegan
+
+green_garden_vegetarian:
+  restaurant: green_garden
+  dietary_restriction: vegetarian
+
+steakhouse_paleo:
+  restaurant: steakhouse
+  dietary_restriction: paleo

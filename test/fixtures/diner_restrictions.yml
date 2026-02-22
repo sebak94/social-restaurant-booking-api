@@ -1,0 +1,11 @@
+jack_vegan:
+  diner: jack
+  dietary_restriction: vegan
+
+jill_vegetarian:
+  diner: jill
+  dietary_restriction: vegetarian
+
+jane_vegan:
+  diner: jane
+  dietary_restriction: vegan

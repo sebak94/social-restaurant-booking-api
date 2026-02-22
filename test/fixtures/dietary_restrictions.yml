@@ -1,0 +1,8 @@
+vegan:
+  name: Vegan
+
+vegetarian:
+  name: Vegetarian
+
+paleo:
+  name: Paleo

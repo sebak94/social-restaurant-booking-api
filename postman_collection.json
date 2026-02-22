@@ -1,0 +1,188 @@
+{
+  "info": {
+    "name": "Social Restaurant Booking API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "Search Restaurants",
+      "item": [
+        {
+          "name": "Search - Jack, Jill, Jane (Vegan + Vegetarian + Gluten-free)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/restaurants/search?diner_ids[]=1&diner_ids[]=2&diner_ids[]=3&reservation_time=2026-02-24T19:30:00Z",
+              "host": ["{{base_url}}"],
+              "path": ["restaurants", "search"],
+              "query": [
+                { "key": "diner_ids[]", "value": "1" },
+                { "key": "diner_ids[]", "value": "2" },
+                { "key": "diner_ids[]", "value": "3" },
+                { "key": "reservation_time", "value": "2026-02-24T19:30:00Z" }
+              ]
+            },
+            "description": "Jack (Vegan), Jill (Vegetarian), Jane (Vegan, Gluten-free). Should return Green Garden and Fusion Bistro with tables capacity >= 3."
+          }
+        },
+        {
+          "name": "Search - Bob (no restrictions)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/restaurants/search?diner_ids[]=4&reservation_time=2026-02-24T19:30:00Z",
+              "host": ["{{base_url}}"],
+              "path": ["restaurants", "search"],
+              "query": [
+                { "key": "diner_ids[]", "value": "4" },
+                { "key": "reservation_time", "value": "2026-02-24T19:30:00Z" }
+              ]
+            },
+            "description": "Bob has no dietary restrictions. Should return all restaurants."
+          }
+        },
+        {
+          "name": "Search - Jack alone (Vegan)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/restaurants/search?diner_ids[]=1&reservation_time=2026-02-24T20:00:00Z",
+              "host": ["{{base_url}}"],
+              "path": ["restaurants", "search"],
+              "query": [
+                { "key": "diner_ids[]", "value": "1" },
+                { "key": "reservation_time", "value": "2026-02-24T20:00:00Z" }
+              ]
+            },
+            "description": "Jack is Vegan. Should return Green Garden and Fusion Bistro."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Reservation",
+      "item": [
+        {
+          "name": "Create - Jack & Jill at Green Garden (table cap 4)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_id\": 2,\n  \"diner_ids\": [1, 2],\n  \"reservation_time\": \"2026-02-24T19:30:00Z\"\n}"
+            },
+            "description": "Reserve table id=2 (Green Garden, cap 4) for Jack and Jill. Should return 201."
+          }
+        },
+        {
+          "name": "Create - Overlapping reservation (should fail 422)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_id\": 2,\n  \"diner_ids\": [3],\n  \"reservation_time\": \"2026-02-24T20:00:00Z\"\n}"
+            },
+            "description": "Same table at overlapping time (within 2h window). Should return 422."
+          }
+        },
+        {
+          "name": "Create - Non-existent table (should fail 404)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_id\": 999999,\n  \"diner_ids\": [1],\n  \"reservation_time\": \"2026-02-24T19:30:00Z\"\n}"
+            },
+            "description": "Table does not exist. Should return 404."
+          }
+        },
+        {
+          "name": "Create - Capacity exceeded (should fail 422)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_id\": 1,\n  \"diner_ids\": [1, 2, 3],\n  \"reservation_time\": \"2026-02-25T19:30:00Z\"\n}"
+            },
+            "description": "Table id=1 (Green Garden, cap 2) for 3 diners. Should return 422."
+          }
+        },
+        {
+          "name": "Create - Dietary restriction not met (should fail 422)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_id\": 5,\n  \"diner_ids\": [1],\n  \"reservation_time\": \"2026-02-25T19:30:00Z\"\n}"
+            },
+            "description": "Jack (Vegan) at The Steakhouse (only Paleo-friendly). Should return 422."
+          }
+        },
+        {
+          "name": "Create - No diners (should fail 422)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"table_id\": 2,\n  \"diner_ids\": [],\n  \"reservation_time\": \"2026-02-25T20:00:00Z\"\n}"
+            },
+            "description": "No diners provided. Should return 422."
+          }
+        }
+      ]
+    }
+  ]
+}
